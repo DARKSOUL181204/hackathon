@@ -1,0 +1,18 @@
+$kind: http-request
+url: http://localhost:9192/api/v1/supplies
+method: POST
+headers:
+  Authorization: Bearer admin
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "itemCode": "MRE-01",
+      "name": "Meals Ready to Eat",
+      "category": "RATIONS",
+      "unitOfMeasure": "BOX",
+      "description": "Standard field rations",
+      "reorderLevel": 500
+    }
+order: 1000

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Access Request Status | DEF-LOGIX')}"></head>
+<body class="auth-page">
+    <main class="auth-shell">
+        <section class="auth-intro" aria-label="Access request tracking">
+            <div>
+                <a class="brand" href="/login"><span class="brand-mark">DL</span><span>DEF-<strong>LOGIX</strong><small>Operational command</small></span></a>
+                <h1>Access requests stay visible.</h1>
+                <p>Track your latest access decision here. Approval is required before you can enter the operational console.</p>
+            </div>
+            <div class="auth-footnote">No access is granted until an administrator approves it</div>
+        </section>
+        <section class="auth-card">
+            <p class="eyebrow">Request tracking</p>
+            <h2>Access request status</h2>
+            <p th:if="${trackedUsername == null or trackedUsername.isBlank()}">Enter the service ID used in your request.</p>
+            <div th:if="${successMessage}" class="alert alert-success" role="status" th:text="${successMessage}"></div>
+            <form action="/access-status" method="get" class="auth-form">
+                <div class="form-group"><label>Service ID</label><input name="username" class="form-control" required th:value="${trackedUsername}" autocomplete="username"></div>
+                <button class="btn btn-secondary" type="submit">Check status</button>
+            </form>
+            <div th:if="${accessRequestStatus != null and !accessRequestStatus.isEmpty()}" class="card" style="margin-top:22px; margin-bottom:0;">
+                <div th:each="request : ${accessRequestStatus}">
+                    <div class="section-heading"><span class="card-title" th:text="${request.requestedRole + ' access'}"></span><span class="badge" th:classappend="${request.status == 'APPROVED' ? ' badge-green' : (request.status == 'REJECTED' ? ' badge-red' : ' badge-yellow')}" th:text="${request.status}"></span></div>
+                    <p class="muted" th:if="${request.status == 'PENDING'}">Your request is queued for administrator review. You will be able to sign in after approval.</p>
+                    <p class="muted" th:if="${request.status == 'APPROVED'}">Access approved. Return to sign in using your service ID and password.</p>
+                    <p class="muted" th:if="${request.status == 'REJECTED'}" th:text="${request.rejectionReason ?: 'This request was not approved. Contact command for more information.'}"></p>
+                </div>
+            </div>
+            <p class="auth-alt"><a href="/login">Return to sign in</a></p>
+        </section>
+    </main>
+</body>
+</html>

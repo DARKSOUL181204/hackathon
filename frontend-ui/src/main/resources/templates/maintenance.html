@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Repair Bay | DEF-LOGIX')}"></head>
+<body>
+    <div th:replace="~{fragments/layout :: page(~{::content}, 'maintenance')}">
+        <div th:fragment="content">
+            <div class="card">
+                <div class="flex-header"><h3 class="card-title" style="margin:0;">SCHEDULE REPAIR</h3></div>
+                <form action="/maintenance/create" method="post" class="form-grid form-grid-wide">
+                    <div class="form-group" style="margin:0;"><label>Code</label><input type="text" name="maintenanceCode" class="form-control" required placeholder="REP-01"></div>
+                    <div class="form-group" style="margin:0;"><label>Target Type</label><select name="targetType" class="form-control"><option value="VEHICLE">VEHICLE</option><option value="ASSET">ASSET</option></select></div>
+                    <div class="form-group" style="margin:0;"><label>Target ID</label><input type="number" min="1" name="targetId" class="form-control" required placeholder="1"></div>
+                    <div class="form-group" style="margin:0;"><label>Priority</label><select name="priority" class="form-control"><option value="HIGH">HIGH / CRITICAL</option><option value="MEDIUM">MEDIUM / ROUTINE</option><option value="LOW">LOW</option></select></div>
+                    <div class="form-group" style="margin:0;"><label>Desc</label><input type="text" name="description" class="form-control" required placeholder="Engine swap"></div>
+                    <div class="form-group" style="margin:0;"><label>Scheduled for</label><input type="datetime-local" name="scheduledDate" class="form-control" required></div>
+                    <button type="submit" class="btn btn-danger">Schedule repair</button>
+                </form>
+            </div>
+            <div class="card">
+                <div class="table-toolbar"><h3 class="card-title">Repair schedules &amp; worklogs</h3><div class="table-search"><input class="form-control" type="search" placeholder="Filter repairs" aria-label="Filter repairs" data-table-filter="#maintenance-table" data-result-count="#maintenance-filter-count"></div><span id="maintenance-filter-count" class="filter-count"></span></div>
+                <div class="table-scroll"><table id="maintenance-table" class="table-dark">
+                    <thead><tr><th>Repair Code</th><th>Type</th><th>Desc</th><th>Priority</th><th>Status</th><th>Action</th></tr></thead>
+                    <tbody>
+                        <tr th:each="m : ${maintenanceList}" data-filter-row>
+                            <td th:text="${m.maintenanceCode}"></td><td th:text="${m.targetType}"></td><td th:text="${m.description}"></td>
+                            <td><span class="badge badge-yellow" th:text="${m.priority}"></span></td>
+                            <td><span class="badge badge-red" th:text="${m.status}"></span></td>
+                            <td><form th:if="${m.status != 'COMPLETED' and m.status != 'CANCELLED'}" th:action="@{/maintenance/{id}/complete(id=${m.id})}" method="post"><button class="btn btn-primary btn-compact" type="submit">Mark complete</button></form><span class="section-note" th:unless="${m.status != 'COMPLETED' and m.status != 'CANCELLED'}">Closed</span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

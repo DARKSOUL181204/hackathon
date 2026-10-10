@@ -1,0 +1,6 @@
+$kind: http-request
+url: http://localhost:9191/api/v1/maintenance-orders/1/complete
+method: POST
+headers:
+  Authorization: Bearer admin
+order: 8000

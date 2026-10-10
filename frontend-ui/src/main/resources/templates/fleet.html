@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Fleet Matrix | DEF-LOGIX')}"></head>
+<body>
+    <div th:replace="~{fragments/layout :: page(~{::content}, 'fleet')}">
+        <div th:fragment="content">
+            <div class="card" th:if="${session.role == 'ADMIN'}">
+                <div class="flex-header"><h3 class="card-title" style="margin:0;">REGISTER NEW VEHICLE</h3></div>
+                <form action="/vehicles/create" method="post" class="form-grid form-grid-wide">
+                    <div class="form-group" style="margin:0;"><label>Reg #</label><input type="text" name="registrationNumber" class="form-control" required placeholder="TANK-01"></div>
+                    <div class="form-group" style="margin:0;"><label>Unit ID</label><input type="number" name="unitId" class="form-control" required placeholder="1"></div>
+                    <div class="form-group" style="margin:0;"><label>Type</label><select name="vehicleType" class="form-control"><option value="TRUCK">TRUCK</option><option value="JEEP">JEEP</option><option value="ARMORED">ARMORED</option><option value="AIR">AIR</option><option value="NAVAL">NAVAL</option></select></div>
+                    <div class="form-group" style="margin:0;"><label>Location</label><input type="text" name="location" class="form-control" required placeholder="Base Alpha"></div>
+                    <div class="form-group" style="margin:0;"><label>Condition</label><select name="condition" class="form-control"><option value="NEW">NEW</option><option value="GOOD">GOOD</option><option value="FAIR">FAIR</option><option value="POOR">POOR</option><option value="BROKEN">BROKEN</option></select></div>
+                    <div class="form-group" style="margin:0;">
+                        <label>Status</label>
+                        <select name="operationalStatus" class="form-control"><option value="AVAILABLE">AVAILABLE</option><option value="UNDER_MAINTENANCE">MAINTENANCE</option><option value="ALLOCATED">ALLOCATED</option></select>
+                    </div>
+                    <div class="form-group" style="margin:0;"><label>Driver Personnel ID</label><input type="number" min="1" name="driverPersonnelId" class="form-control" placeholder="Optional"></div>
+                    <button type="submit" class="btn btn-primary">Add vehicle</button>
+                </form>
+            </div>
+            <div class="card">
+                <div class="table-toolbar"><h3 class="card-title">Live fleet tracking</h3><div class="table-search"><input class="form-control" type="search" placeholder="Filter fleet" aria-label="Filter fleet" data-table-filter="#fleet-table" data-result-count="#fleet-filter-count"></div><span id="fleet-filter-count" class="filter-count"></span></div>
+                <div class="table-scroll"><table id="fleet-table" class="table-dark">
+                    <thead><tr><th>Reg #</th><th>Type</th><th>Location</th><th>Condition</th><th>Driver</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr th:each="v : ${vehicleList}" data-filter-row>
+                            <td th:text="${v.registrationNumber}"></td><td th:text="${v.vehicleType}"></td><td th:text="${v.location}"></td>
+                            <td th:text="${v.condition}"></td><td th:text="${v.driverPersonnelId ?: 'UNASSIGNED'}"></td><td><span th:class="${v.operationalStatus == 'AVAILABLE' ? 'badge badge-green' : 'badge badge-red'}" th:text="${v.operationalStatus}"></span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+$kind: http-request
+url: http://localhost:9192/api/v1/inventory/issue
+method: POST
+headers:
+  Authorization: Bearer admin
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "supplyItemId": 1,
+      "location": "Warehouse A",
+      "requestId": 999,
+      "quantity": 50,
+      "issuedTo": "Captain Price"
+    }
+order: 4000

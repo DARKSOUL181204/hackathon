@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Logistics Queue | DEF-LOGIX')}"></head>
+<body>
+    <div th:replace="~{fragments/layout :: page(~{::content}, 'requests')}">
+        <div th:fragment="content">
+            <div class="card">
+                <div class="flex-header"><div><h3 class="card-title">Create logistics request</h3><p class="section-note">Choose the supply, quantity, and delivery point. Reference details are created automatically.</p></div></div>
+                <form action="/requests/create" method="post" class="form-grid" id="request-create-form">
+                    <input type="hidden" name="requestNumber" value="">
+                    <input type="hidden" name="requestedBy" th:value="${session.username}">
+                    <input type="hidden" name="purpose" value="Operational supply request">
+                    <input type="hidden" name="description" id="item-description">
+                    <input type="hidden" name="unitOfMeasure" id="item-uom">
+                    <div class="form-group"><label>Supply item</label><select name="supplyItemId" id="supply-item" class="form-control" required><option value="">Select an available item</option><option th:each="s : ${supplyList}" th:value="${s.id}" th:text="${s.name + ' · ' + s.itemCode}" th:attr="data-description=${s.name},data-uom=${s.unitOfMeasure}"></option></select></div>
+                    <div class="form-group"><label>Quantity needed</label><input type="number" min="0.01" step="0.01" name="quantity" class="form-control" required placeholder="Enter quantity"></div>
+                    <div class="form-group"><label>Requesting unit</label><select name="requestingUnitId" id="requesting-unit" class="form-control" required><option value="">Select unit</option><option th:each="unit : ${units}" th:value="${unit.id}" th:text="${unit.name + ' · ' + unit.code}" th:attr="data-location=${unit.location}"></option></select></div>
+                    <div class="form-group"><label>Delivery location</label><input type="text" name="deliveryLocation" id="delivery-location" class="form-control" required placeholder="Select a unit to suggest location"></div>
+                    <div class="form-group"><label>Priority</label><select name="priority" class="form-control"><option value="NORMAL" selected>NORMAL</option><option value="HIGH">HIGH</option><option value="LOW">LOW</option></select></div>
+                    <div class="form-actions" style="grid-column: 1 / -1;"><button type="submit" class="btn btn-primary">Submit formal request</button></div>
+                </form>
+            </div>
+            <div class="card">
+                <div class="table-toolbar"><div><h3 class="card-title">Request triage &amp; orchestration queue</h3><span class="section-note">Created requirements need an authorization decision.</span></div><form action="/requests" method="get" class="filter-form" aria-label="Filter requests"><div class="table-search"><input class="form-control" type="search" name="query" th:value="${requestQuery}" placeholder="Search requests" aria-label="Search requests"></div><select class="form-control filter-status" name="status" aria-label="Filter request status"><option value="">All statuses</option><option value="CREATED" th:selected="${requestStatus == 'CREATED'}">Created</option><option value="APPROVED" th:selected="${requestStatus == 'APPROVED'}">Approved</option><option value="REJECTED" th:selected="${requestStatus == 'REJECTED'}">Rejected</option><option value="ALLOCATED" th:selected="${requestStatus == 'ALLOCATED'}">Allocated</option></select><button type="submit" class="btn btn-secondary btn-compact">Apply</button><a href="/requests" class="filter-reset">Reset</a></form></div>
+                <div class="table-scroll"><table id="request-table" class="table-dark">
+                    <thead><tr><th>Req #</th><th>Unit ID</th><th>Location</th><th>Priority</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody>
+                        <tr th:each="r : ${requestList}" data-filter-row th:attr="data-request-status=${r.status}">
+                            <td th:text="${r.requestNumber}"></td><td th:text="${r.requestingUnitId}"></td><td th:text="${r.deliveryLocation}"></td>
+                            <td><span class="badge badge-yellow" th:text="${r.priority}"></span></td>
+                            <td><span class="badge" th:classappend="${r.status == 'CREATED' ? ' badge-yellow' : (r.status == 'APPROVED' or r.status == 'ALLOCATED' ? ' badge-green' : ' badge-red')}" th:text="${r.status}"></span></td>
+                            <td><div class="form-actions">
+                                <form th:if="${r.status == 'CREATED' and session.role == 'ADMIN'}" th:action="@{/requests/approve/{id}(id=${r.id})}" method="post"><button type="submit" class="btn btn-blue btn-compact">Authorize</button></form>
+                                <form th:if="${r.status == 'CREATED' and session.role == 'ADMIN'}" th:action="@{/requests/reject/{id}(id=${r.id})}" method="post"><button type="submit" class="btn btn-danger btn-compact">Dismiss</button></form>
+                                <form th:if="${r.status == 'APPROVED' and session.role == 'ADMIN' and r.items != null and !r.items.isEmpty() and r.items[0].supplyItemId != null}" th:action="@{/requests/allocate/{id}(id=${r.id})}" method="post">
+                                    <input type="hidden" name="requestItemId" th:value="${r.items[0].id}">
+                                    <input type="hidden" name="supplyItemId" th:value="${r.items[0].supplyItemId}">
+                                    <input type="hidden" name="quantityAllocated" th:value="${r.items[0].quantityRequested}">
+                                    <input type="hidden" name="allocatedBy" th:value="${session.username}">
+                                    <button type="submit" class="btn btn-primary btn-compact">Allocate Stock</button>
+                                </form>
+                            </div></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(requestList)}" class="empty-state"><td colspan="6">No requests match these filters.</td></tr>
+                    </tbody>
+                </table></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('supply-item')?.addEventListener('change', function () {
+            const option = this.options[this.selectedIndex];
+            document.getElementById('item-description').value = option.dataset.description || '';
+            document.getElementById('item-uom').value = option.dataset.uom || '';
+        });
+        document.getElementById('requesting-unit')?.addEventListener('change', function () {
+            const option = this.options[this.selectedIndex];
+            const delivery = document.getElementById('delivery-location');
+            if (option.dataset.location && !delivery.value) delivery.value = option.dataset.location;
+        });
+        document.getElementById('request-create-form')?.addEventListener('submit', function () {
+            const supply = document.getElementById('supply-item');
+            const option = supply.options[supply.selectedIndex];
+            document.getElementById('item-description').value = option.dataset.description || '';
+            document.getElementById('item-uom').value = option.dataset.uom || '';
+        });
+    </script>
+</body>
+</html>

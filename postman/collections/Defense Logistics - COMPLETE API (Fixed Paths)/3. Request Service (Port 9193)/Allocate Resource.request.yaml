@@ -1,0 +1,16 @@
+$kind: http-request
+url: http://localhost:9193/api/v1/requests/1/allocate
+method: POST
+headers:
+  Authorization: Bearer admin
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "requestItemId": 1,
+      "supplyItemId": 1,
+      "quantityAllocated": 200,
+      "allocatedBy": "Logistics Officer Jones"
+    }
+order: 3000

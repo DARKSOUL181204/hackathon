@@ -1,0 +1,6 @@
+$kind: http-request
+url: http://localhost:9192/api/v1/inventory/stock
+method: GET
+headers:
+  Authorization: Bearer admin
+order: 5000

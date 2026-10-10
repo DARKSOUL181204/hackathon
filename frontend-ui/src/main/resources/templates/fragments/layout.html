@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title}">DEF-LOGIX</title>
+    <script>
+        (function () {
+            const preference = localStorage.getItem('def-logix-theme') || 'system';
+            const resolved = preference === 'system' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : preference;
+            document.documentElement.dataset.theme = resolved;
+            const media = matchMedia('(prefers-color-scheme: dark)');
+            function applyTheme(choice) {
+                const activeTheme = choice === 'system' ? (media.matches ? 'dark' : 'light') : choice;
+                document.documentElement.dataset.theme = activeTheme;
+                document.querySelectorAll('[data-theme-choice]').forEach(function (button) {
+                    const active = button.dataset.themeChoice === choice;
+                    button.classList.toggle('active', active);
+                    button.setAttribute('aria-pressed', String(active));
+                });
+            }
+            window.defLogixTheme = { apply: applyTheme, preference: function () { return localStorage.getItem('def-logix-theme') || 'system'; } };
+            document.addEventListener('DOMContentLoaded', function () { applyTheme(window.defLogixTheme.preference()); });
+            document.addEventListener('click', function (event) {
+                const choice = event.target.closest('[data-theme-choice]')?.dataset.themeChoice;
+                if (!choice) return;
+                localStorage.setItem('def-logix-theme', choice);
+                applyTheme(choice);
+            });
+            media.addEventListener('change', function () { if (window.defLogixTheme.preference() === 'system') applyTheme('system'); });
+        }());
+    </script>
+    <link rel="stylesheet" th:href="@{/css/def-logix.css}">
+</head>
+<body>
+    <div class="wrapper" th:fragment="page(content, activeMenu)">
+        <aside class="sidebar" aria-label="Primary navigation">
+            <a class="brand" href="/" aria-label="DEF-LOGIX home">
+                <span class="brand-mark" aria-hidden="true">DL</span>
+                <span>DEF-<strong>LOGIX</strong><small>Operational command</small></span>
+            </a>
+            <nav class="nav-list">
+                <a href="/admin" class="nav-link" th:if="${session.role == 'ADMIN'}"><span class="nav-index">00</span> Command overview <span class="nav-count" th:if="${pendingAccessRequests != null and pendingAccessRequests > 0}" th:text="${pendingAccessRequests}"></span></a>
+                <a href="/" th:class="${activeMenu == 'dashboard' ? 'nav-link active' : 'nav-link'}"><span class="nav-index">01</span> Dashboard</a>
+                <a href="/my-status" th:class="${activeMenu == 'my-status' ? 'nav-link active' : 'nav-link'}"><span class="nav-index">01A</span> My status</a>
+                <a href="/personnel" th:class="${activeMenu == 'personnel' ? 'nav-link active' : 'nav-link'}"><span class="nav-index">02</span> Personnel</a>
+                <a href="/assets" th:class="${activeMenu == 'assets' ? 'nav-link active' : 'nav-link'}"><span class="nav-index">03</span> Assets</a>
+                <a href="/fleet" th:class="${activeMenu == 'fleet' ? 'nav-link active' : 'nav-link'}"><span class="nav-index">04</span> Fleet</a>
+                <a href="/inventory" th:if="${session.role == 'ADMIN'}" th:class="${activeMenu == 'inventory' ? 'nav-link active' : 'nav-link'}"><span class="nav-index">05</span> Inventory</a>
+                <a href="/requests" th:class="${activeMenu == 'requests' ? 'nav-link active' : 'nav-link'}"><span class="nav-index">06</span> Requests</a>
+                <a href="/maintenance" th:if="${session.role == 'ADMIN'}" th:class="${activeMenu == 'maintenance' ? 'nav-link active' : 'nav-link'}"><span class="nav-index">07</span> Repair bay</a>
+            </nav>
+            <div class="sidebar-footer">
+                <span class="connection-status"><i></i> Network online</span>
+                <a href="/logout" class="logout-link">Sign out</a>
+            </div>
+        </aside>
+        <div class="main-content">
+            <div class="top-header">
+                <div>
+                    <p class="eyebrow">DEF-LOGIX / Operational console</p>
+                    <h1>Readiness control</h1>
+                </div>
+                <div class="session-meta">
+                    <div class="theme-switcher" role="group" aria-label="Color theme">
+                        <button type="button" class="theme-option" data-theme-choice="light" aria-label="Use light theme">Light</button>
+                        <button type="button" class="theme-option" data-theme-choice="dark" aria-label="Use dark theme">Dark</button>
+                        <button type="button" class="theme-option" data-theme-choice="system" aria-label="Use system theme">System</button>
+                    </div>
+                    <span class="badge badge-green"><i class="status-dot"></i> Live</span>
+                    <span class="role-label" th:text="${session.role + ' access'}"></span>
+                </div>
+            </div>
+            <div th:if="${successMessage}" class="alert alert-success" role="status" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-error" role="alert" th:text="${errorMessage}"></div>
+            <div th:replace="${content}"></div>
+        </div>
+    </div>
+    <script>
+        function filterTable(table, query, status, count) {
+            if (!table) return;
+            let visible = 0;
+            table.querySelectorAll('tbody tr[data-filter-row]').forEach(function (row) {
+                const matches = row.textContent.toLowerCase().includes(query.toLowerCase()) && (!status || row.dataset.requestStatus === status);
+                row.hidden = !matches;
+                if (matches) visible += 1;
+            });
+            if (count) count.textContent = (query || status) ? visible + ' matching' : '';
+        }
+        document.addEventListener('input', function (event) {
+            if (!event.target.matches('[data-table-filter]')) return;
+            const table = document.querySelector(event.target.dataset.tableFilter);
+            if (!table) return;
+            const query = event.target.value.trim().toLowerCase();
+            const status = document.querySelector('[data-request-status-filter="' + event.target.dataset.tableFilter + '"]')?.value || '';
+            const count = document.querySelector(event.target.dataset.resultCount || '');
+            filterTable(table, query, status, count);
+        });
+        document.addEventListener('change', function (event) {
+            if (!event.target.matches('[data-request-status-filter]')) return;
+            const table = document.querySelector(event.target.dataset.requestStatusFilter);
+            const search = document.querySelector('[data-table-filter="' + event.target.dataset.requestStatusFilter + '"]');
+            const count = document.querySelector(search?.dataset.resultCount || '');
+            filterTable(table, search?.value.trim() || '', event.target.value, count);
+        });
+    </script>
+</body>
+</html>

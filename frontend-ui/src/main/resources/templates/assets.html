@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Asset Mgmt | DEF-LOGIX')}"></head>
+<body>
+    <div th:replace="~{fragments/layout :: page(~{::content}, 'assets')}">
+        <div th:fragment="content">
+            <div class="card" th:if="${session.role == 'ADMIN'}">
+                <div class="flex-header"><h3 class="card-title" style="margin:0;">REGISTER NEW ASSET</h3></div>
+                <form action="/assets/create" method="post" class="form-grid form-grid-wide">
+                    <div class="form-group" style="margin:0;"><label>Code</label><input type="text" name="assetCode" class="form-control" required placeholder="MED-01"></div>
+                    <div class="form-group" style="margin:0;"><label>Name</label><input type="text" name="name" class="form-control" required placeholder="Field Kit"></div>
+                    <div class="form-group" style="margin:0;"><label>Unit ID</label><input type="number" name="unitId" class="form-control" required placeholder="1"></div>
+                    <div class="form-group" style="margin:0;"><label>Category</label><select name="category" class="form-control"><option value="WEAPON">WEAPON</option><option value="COMM">COMM</option><option value="MEDICAL">MEDICAL</option><option value="TRANSPORT">TRANSPORT</option><option value="OTHER">OTHER</option></select></div>
+                    <div class="form-group" style="margin:0;"><label>Location</label><input type="text" name="location" class="form-control" required placeholder="HQ"></div>
+                    <div class="form-group" style="margin:0;"><label>Condition</label><select name="condition" class="form-control"><option value="NEW">NEW</option><option value="GOOD">GOOD</option><option value="FAIR">FAIR</option><option value="POOR">POOR</option><option value="BROKEN">BROKEN</option></select></div>
+                    <div class="form-group" style="margin:0;">
+                        <label>Status</label>
+                        <select name="operationalStatus" class="form-control"><option value="AVAILABLE">AVAILABLE</option><option value="ALLOCATED">ALLOCATED</option></select>
+                    </div>
+                    <div class="form-group" style="margin:0;"><label>Assigned Personnel ID</label><input type="number" min="1" name="assignedPersonnelId" class="form-control" placeholder="Optional"></div>
+                    <button type="submit" class="btn btn-primary">Register asset</button>
+                </form>
+            </div>
+            <div class="card">
+                <div class="table-toolbar"><h3 class="card-title">Asset index</h3><div class="table-search"><input class="form-control" type="search" placeholder="Filter assets" aria-label="Filter assets" data-table-filter="#asset-table" data-result-count="#asset-filter-count"></div><span id="asset-filter-count" class="filter-count"></span></div>
+                <div class="table-scroll"><table id="asset-table" class="table-dark">
+                    <thead><tr><th>Code</th><th>Name</th><th>Category</th><th>Location</th><th>Condition</th><th>Assigned To</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr th:each="v : ${assetList}" data-filter-row>
+                            <td th:text="${v.assetCode}"></td><td th:text="${v.name}"></td><td th:text="${v.category}"></td><td th:text="${v.location}"></td>
+                            <td th:text="${v.condition}"></td><td th:text="${v.assignedPersonnelId ?: 'UNASSIGNED'}"></td><td><span th:class="${v.operationalStatus == 'AVAILABLE' ? 'badge badge-green' : 'badge badge-red'}" th:text="${v.operationalStatus}"></span></td>
+                        </tr>
+                    </tbody>
+                </table></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Admin Dashboard | DEF-LOGIX')}"></head>
+<body>
+    <div th:replace="~{fragments/layout :: page(~{::content}, 'admin')}">
+        <div th:fragment="content">
+            <div class="section-heading">
+                <div><p class="eyebrow">Command overview</p><h2>Global readiness snapshot</h2></div>
+                <span class="section-note">Live service inventory</span>
+            </div>
+            <div class="grid-3">
+                <div class="card stat-card" style="--metric-accent: var(--accent-red);">
+                    <div class="card-title">Active bases / units</div>
+                    <div class="stat-value" th:text="${units}">0</div>
+                    <p class="stat-subtitle">Registered operational locations</p>
+                </div>
+                <div class="card stat-card" style="--metric-accent: var(--accent-yellow);">
+                    <div class="card-title">Global personnel</div>
+                    <div class="stat-value" th:text="${personnel}">0</div>
+                    <p class="stat-subtitle">Members in the service directory</p>
+                </div>
+                <div class="card stat-card">
+                    <div class="card-title">Vehicles in fleet</div>
+                    <div class="stat-value" th:text="${vehicles}">0</div>
+                    <p class="stat-subtitle">Vehicles currently tracked</p>
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="card stat-card" style="--metric-accent: var(--accent-blue);">
+                    <div class="card-title">Logistics requests</div>
+                    <div class="stat-value" th:text="${requests}">0</div>
+                    <p class="stat-subtitle">Requirements in orchestration</p>
+                </div>
+                <div class="card stat-card" style="--metric-accent: var(--accent-yellow);">
+                    <div class="card-title">Supply definitions</div>
+                    <div class="stat-value" th:text="${supplies}">0</div>
+                    <p class="stat-subtitle">Items available to request</p>
+                </div>
+                <div class="card stat-card">
+                    <div class="card-title">Stock locations</div>
+                    <div class="stat-value" th:text="${stock}">0</div>
+                    <p class="stat-subtitle">Tracked physical inventory records</p>
+                </div>
+            </div>
+
+            <section class="card">
+                <div class="section-heading">
+                    <div><p class="eyebrow">Identity &amp; access</p><h3 class="card-title">Access requests</h3></div>
+                    <span class="badge badge-yellow" th:text="${pendingAccessRequests + ' pending'}">0 pending</span>
+                </div>
+                <p class="section-note">Approving a request activates its account and grants only the requested employee role. Decisions record your administrator identity and timestamp.</p>
+                <div class="table-scroll"><table class="table-dark">
+                    <thead><tr><th>Name</th><th>Service ID</th><th>Requested access</th><th>Submitted</th><th>Context</th><th>Status</th><th>Decision</th></tr></thead>
+                    <tbody>
+                        <tr th:each="request : ${accessRequests}">
+                            <td th:text="${request.fullName}"></td>
+                            <td th:text="${request.username}"></td>
+                            <td><span class="badge badge-blue" th:text="${request.requestedRole}"></span></td>
+                            <td th:text="${request.submittedAt}"></td>
+                            <td th:text="${request.requestDetails ?: '—'}"></td>
+                            <td><span class="badge" th:classappend="${request.status == 'APPROVED' ? ' badge-green' : (request.status == 'REJECTED' ? ' badge-red' : ' badge-yellow')}" th:text="${request.status}"></span></td>
+                            <td>
+                                <div th:if="${request.status == 'PENDING'}" class="form-actions">
+                                    <form th:action="@{/access-requests/{id}/approve(id=${request.id})}" method="post"><button class="btn btn-primary btn-compact" type="submit">Approve</button></form>
+                                    <form th:action="@{/access-requests/{id}/reject(id=${request.id})}" method="post" class="form-actions">
+                                        <input class="form-control" style="min-height:32px; width:150px;" name="reason" maxlength="500" placeholder="Reason (optional)">
+                                        <button class="btn btn-danger btn-compact" type="submit">Reject</button>
+                                    </form>
+                                </div>
+                                <span th:unless="${request.status == 'PENDING'}" class="section-note" th:text="${request.decidedBy == null ? 'Decision recorded' : 'By ' + request.decidedBy}"></span>
+                            </td>
+                        </tr>
+                        <tr class="empty-state" th:if="${accessRequests == null or accessRequests.isEmpty()}"><td colspan="7">No access requests have been submitted.</td></tr>
+                    </tbody>
+                </table></div>
+            </section>
+            
+            <div class="card">
+                <div class="section-heading"><h3 class="card-title">System status</h3><span class="badge badge-green"><i class="status-dot"></i> All services reachable</span></div>
+                <div class="table-scroll"><table class="table-dark">
+                    <tbody>
+                        <tr><td>Resource Service (Port 9191)</td><td><span class="badge badge-green">ONLINE</span></td></tr>
+                        <tr><td>Inventory Service (Port 9192)</td><td><span class="badge badge-green">ONLINE</span></td></tr>
+                        <tr><td>Request Service (Port 9193)</td><td><span class="badge badge-green">ONLINE</span></td></tr>
+                        <tr><td>Frontend Gateway (Port 8080)</td><td><span class="badge badge-green">ONLINE</span></td></tr>
+                    </tbody>
+                </table></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

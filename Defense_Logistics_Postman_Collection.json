@@ -1,0 +1,171 @@
+{
+  "info": {
+    "name": "Defense Logistics - COMPLETE API (Fixed Paths)",
+    "description": "API Collection matching exactly the implemented endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Resource Service (Port 9191)",
+      "item": [
+        {
+          "name": "Create Unit",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer admin" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "http://localhost:9191/api/v1/units", "protocol": "http", "host": ["localhost"], "port": "9191", "path": ["api", "v1", "units"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Alpha Squadron\",\n  \"code\": \"UNIT-001\",\n  \"location\": \"Base Camp Alpha\",\n  \"status\": \"ACTIVE\"\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Get All Units",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer admin" } ],
+            "url": { "raw": "http://localhost:9191/api/v1/units", "protocol": "http", "host": ["localhost"], "port": "9191", "path": ["api", "v1", "units"] }
+          }
+        },
+        {
+          "name": "Create Personnel",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer admin" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "http://localhost:9191/api/v1/personnels", "protocol": "http", "host": ["localhost"], "port": "9191", "path": ["api", "v1", "personnels"] },
+            "body": { "mode": "raw", "raw": "{\n  \"serviceNumber\": \"SN-12345\",\n  \"fullName\": \"John Doe\",\n  \"role\": \"MEDIC\",\n  \"unitId\": 1,\n  \"posting\": \"Camp Alpha\",\n  \"availabilityStatus\": \"AVAILABLE\"\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Get Personnel by ID",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer admin" } ],
+            "url": { "raw": "http://localhost:9191/api/v1/personnels/1", "protocol": "http", "host": ["localhost"], "port": "9191", "path": ["api", "v1", "personnels", "1"] }
+          }
+        },
+        {
+          "name": "Create Asset",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer admin" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "http://localhost:9191/api/v1/assets", "protocol": "http", "host": ["localhost"], "port": "9191", "path": ["api", "v1", "assets"] },
+            "body": { "mode": "raw", "raw": "{\n  \"assetCode\": \"RAD-101\",\n  \"name\": \"Field Radio Mk2\",\n  \"category\": \"COMM\",\n  \"unitId\": 1,\n  \"location\": \"Camp Alpha\",\n  \"operationalStatus\": \"AVAILABLE\",\n  \"condition\": \"NEW\"\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Create Vehicle",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer admin" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "http://localhost:9191/api/v1/vehicles", "protocol": "http", "host": ["localhost"], "port": "9191", "path": ["api", "v1", "vehicles"] },
+            "body": { "mode": "raw", "raw": "{\n  \"registrationNumber\": \"TRK-999\",\n  \"vehicleType\": \"TRUCK\",\n  \"unitId\": 1,\n  \"location\": \"Camp Alpha\",\n  \"operationalStatus\": \"AVAILABLE\",\n  \"condition\": \"GOOD\",\n  \"driverPersonnelId\": 1\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Schedule Maintenance",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer admin" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "http://localhost:9191/api/v1/maintenance-orders", "protocol": "http", "host": ["localhost"], "port": "9191", "path": ["api", "v1", "maintenance-orders"] },
+            "body": { "mode": "raw", "raw": "{\n  \"targetType\": \"VEHICLE\",\n  \"vehicleId\": 1,\n  \"description\": \"Routine Engine Check\",\n  \"priority\": \"MEDIUM\"\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Complete Maintenance",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer admin" } ],
+            "url": { "raw": "http://localhost:9191/api/v1/maintenance-orders/1/complete", "protocol": "http", "host": ["localhost"], "port": "9191", "path": ["api", "v1", "maintenance-orders", "1", "complete"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Inventory Service (Port 9192)",
+      "item": [
+        {
+          "name": "Create Supply Item",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer admin" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "http://localhost:9192/api/v1/supplies", "protocol": "http", "host": ["localhost"], "port": "9192", "path": ["api", "v1", "supplies"] },
+            "body": { "mode": "raw", "raw": "{\n  \"itemCode\": \"MRE-01\",\n  \"name\": \"Meals Ready to Eat\",\n  \"category\": \"RATIONS\",\n  \"unitOfMeasure\": \"BOX\",\n  \"description\": \"Standard field rations\",\n  \"reorderLevel\": 500\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Get All Supply Items",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer admin" } ],
+            "url": { "raw": "http://localhost:9192/api/v1/supplies", "protocol": "http", "host": ["localhost"], "port": "9192", "path": ["api", "v1", "supplies"] }
+          }
+        },
+        {
+          "name": "Receive Stock",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer admin" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "http://localhost:9192/api/v1/inventory/receive", "protocol": "http", "host": ["localhost"], "port": "9192", "path": ["api", "v1", "inventory", "receive"] },
+            "body": { "mode": "raw", "raw": "{\n  \"supplyItemId\": 1,\n  \"location\": \"Warehouse A\",\n  \"quantity\": 1000,\n  \"reference\": \"PO-12345\"\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Issue Stock",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer admin" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "http://localhost:9192/api/v1/inventory/issue", "protocol": "http", "host": ["localhost"], "port": "9192", "path": ["api", "v1", "inventory", "issue"] },
+            "body": { "mode": "raw", "raw": "{\n  \"supplyItemId\": 1,\n  \"location\": \"Warehouse A\",\n  \"requestId\": 999,\n  \"quantity\": 50,\n  \"issuedTo\": \"Captain Price\"\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Get Stock Levels",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer admin" } ],
+            "url": { "raw": "http://localhost:9192/api/v1/inventory/stock", "protocol": "http", "host": ["localhost"], "port": "9192", "path": ["api", "v1", "inventory", "stock"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Request Service (Port 9193)",
+      "item": [
+        {
+          "name": "Create Logistics Request",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer admin" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "http://localhost:9193/api/v1/requests", "protocol": "http", "host": ["localhost"], "port": "9193", "path": ["api", "v1", "requests"] },
+            "body": { "mode": "raw", "raw": "{\n  \"requestNumber\": \"REQ-2026-001\",\n  \"requestingUnitId\": 1,\n  \"requestedBy\": \"Lt. Commander Smith\",\n  \"purpose\": \"Field Training Exercise\",\n  \"priority\": \"HIGH\",\n  \"deliveryLocation\": \"Base Camp Alpha\",\n  \"items\": [\n    {\n      \"resourceType\": \"SUPPLY\",\n      \"description\": \"Field Rations\",\n      \"quantityRequested\": 200,\n      \"unitOfMeasure\": \"BOX\"\n    }\n  ]\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Approve Request",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer admin" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "http://localhost:9193/api/v1/requests/1/approve", "protocol": "http", "host": ["localhost"], "port": "9193", "path": ["api", "v1", "requests", "1", "approve"] },
+            "body": { "mode": "raw", "raw": "{\n  \"approverId\": \"General Davis\",\n  \"decision\": \"APPROVED\",\n  \"comments\": \"Approved for training\"\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Allocate Resource",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer admin" }, { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "http://localhost:9193/api/v1/requests/1/allocate", "protocol": "http", "host": ["localhost"], "port": "9193", "path": ["api", "v1", "requests", "1", "allocate"] },
+            "body": { "mode": "raw", "raw": "{\n  \"requestItemId\": 1,\n  \"supplyItemId\": 1,\n  \"quantityAllocated\": 200,\n  \"allocatedBy\": \"Logistics Officer Jones\"\n}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "Get Dashboard Summary",
+          "request": {
+            "method": "GET",
+            "header": [ { "key": "Authorization", "value": "Bearer admin" } ],
+            "url": { "raw": "http://localhost:9193/api/v1/dashboard/summary", "protocol": "http", "host": ["localhost"], "port": "9193", "path": ["api", "v1", "dashboard", "summary"] }
+          }
+        }
+      ]
+    }
+  ]
+}

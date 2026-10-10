@@ -1,0 +1,18 @@
+$kind: http-request
+url: http://localhost:9191/api/v1/personnels
+method: POST
+headers:
+  Authorization: Bearer admin
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "serviceNumber": "SN-12345",
+      "fullName": "John Doe",
+      "role": "MEDIC",
+      "unitId": 1,
+      "posting": "Camp Alpha",
+      "availabilityStatus": "AVAILABLE"
+    }
+order: 3000

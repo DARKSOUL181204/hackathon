@@ -1,0 +1,6 @@
+$kind: http-request
+url: http://localhost:9193/api/v1/dashboard/summary
+method: GET
+headers:
+  Authorization: Bearer admin
+order: 4000

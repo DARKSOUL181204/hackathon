@@ -1,0 +1,13 @@
+# Use this workspace to collaborate
+workspace:
+  id: e2ea261a-4b2a-4c0d-a050-ac776ca80676
+
+localResources:
+  collections:
+    - ../Defense_Logistics_Postman_Collection.json
+
+# Each entry here maps a local resource to one or more corresponding objects in Postman Cloud
+
+cloudResources:
+  collections:
+    ../postman/collections/Defense Logistics - COMPLETE API (Fixed Paths): ad95b70b-da49-45aa-81b4-fffdd89ac19b

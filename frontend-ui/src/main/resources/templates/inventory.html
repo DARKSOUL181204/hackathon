@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Inventory Stock | DEF-LOGIX')}"></head>
+<body>
+    <div th:replace="~{fragments/layout :: page(~{::content}, 'inventory')}">
+        <div th:fragment="content">
+            
+            <div class="grid-3" style="grid-template-columns: 1fr 1fr;">
+                <!-- Form to Create Supply Item -->
+                <div class="card">
+                    <div class="flex-header">
+                        <h3 class="card-title" style="margin:0;">REGISTER SUPPLY ITEM</h3>
+                    </div>
+                    <form action="/supplies/create" method="post">
+                        <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                            <div class="form-group"><label>Item Code</label><input type="text" name="itemCode" class="form-control" required placeholder="AMMO-556"></div>
+                            <div class="form-group"><label>Name</label><input type="text" name="name" class="form-control" required placeholder="5.56mm Rounds"></div>
+                            <div class="form-group"><label>Category</label><input type="text" name="category" class="form-control" required placeholder="WEAPON"></div>
+                            <div class="form-group"><label>UOM</label><input type="text" name="unitOfMeasure" class="form-control" required placeholder="CRATE"></div>
+                            <div class="form-group"><label>Description</label><input type="text" name="description" class="form-control" required placeholder="Standard issue"></div>
+                            <div class="form-group"><label>Reorder Level</label><input type="number" min="0" step="0.01" name="reorderLevel" class="form-control" required value="100"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Register item</button>
+                    </form>
+                </div>
+
+                <!-- Form to Receive Stock -->
+                <div class="card">
+                    <div class="flex-header">
+                        <h3 class="card-title" style="margin:0;">RECEIVE INBOUND STOCK</h3>
+                    </div>
+                    <form action="/inventory/receive" method="post">
+                        <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                            <div class="form-group"><label>Supply Item ID</label><input type="number" min="1" name="supplyItemId" class="form-control" required placeholder="1"></div>
+                            <div class="form-group"><label>Warehouse Location</label><input type="text" name="location" class="form-control" required placeholder="Base Camp Alpha"></div>
+                            <div class="form-group"><label>Quantity Received</label><input type="number" min="0.01" step="0.01" name="quantity" class="form-control" required placeholder="5000"></div>
+                            <div class="form-group"><label>Reference / PO</label><input type="text" name="reference" class="form-control" required placeholder="PO-2026"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-top:0; background-color: var(--accent-yellow); color: #000;">Add to inventory</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="table-toolbar"><h3 class="card-title">Master supply list</h3><div class="table-search"><input class="form-control" type="search" placeholder="Filter supply items" aria-label="Filter supply items" data-table-filter="#supply-table" data-result-count="#supply-filter-count"></div><span id="supply-filter-count" class="filter-count"></span></div>
+                <div class="table-scroll"><table id="supply-table" class="table-dark">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>UOM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="s : ${supplyList}" data-filter-row>
+                            <td th:text="${s.id}"></td>
+                            <td th:text="${s.itemCode}"></td>
+                            <td th:text="${s.name}"></td>
+                            <td><span class="badge badge-yellow" th:text="${s.category}"></span></td>
+                            <td th:text="${s.unitOfMeasure}"></td>
+                        </tr>
+                        <tr class="empty-state" th:if="${supplyList == null or supplyList.isEmpty()}"><td colspan="5">No supply items have been defined yet.</td></tr>
+                    </tbody>
+                </table></div>
+            </div>
+
+            <div class="card">
+                <div class="section-heading"><h3 class="card-title">Warehouse physical stock levels</h3><span class="section-note">Threshold: 50 units</span></div>
+                <div class="table-scroll"><table class="table-dark">
+                    <thead>
+                        <tr>
+                            <th>Stock ID</th>
+                            <th>Supply Item ID</th>
+                            <th>Location</th>
+                            <th>Available Qty</th>
+                            
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="v : ${stockList}">
+                            <td th:text="${v.id}"></td>
+                            <td th:text="${v.supplyItemId}"></td>
+                            <td th:text="${v.location}"></td>
+                            <td class="status-value" th:text="${v.quantityOnHand}"></td>
+                            
+                            <td>
+                                <span th:if="${v.quantityOnHand > 50}" class="badge badge-green">HEALTHY</span>
+                                <span th:if="${v.quantityOnHand <= 50}" class="badge badge-red">LOW STOCK</span>
+                            </td>
+                        </tr>
+                        <tr class="empty-state" th:if="${stockList == null or stockList.isEmpty()}"><td colspan="6">No inventory tracking data found.</td></tr>
+                    </tbody>
+                </table></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Personnel Profile | DEF-LOGIX')}"></head>
+<body>
+    <div th:replace="~{fragments/layout :: page(~{::content}, 'personnel')}">
+        <div th:fragment="content">
+            <a class="back-link" href="/personnel">← Return to personnel roster</a>
+            <section class="profile-hero">
+                <div class="profile-mark" th:text="${#strings.substring(person.fullName, 0, 1)}">P</div>
+                <div>
+                    <p class="eyebrow">Personnel service record</p>
+                    <h1 th:text="${person.fullName}">Personnel Name</h1>
+                    <p><span th:text="${person.serviceNumber}"></span> · <span th:text="${person.role}"></span></p>
+                </div>
+                <span class="badge" th:classappend="${person.availabilityStatus == 'AVAILABLE' ? ' badge-green' : ' badge-yellow'}" th:text="${person.availabilityStatus}"></span>
+            </section>
+
+            <div class="profile-grid">
+                <section class="card">
+                    <h3 class="card-title">Assignment details</h3>
+                    <dl class="intel-list">
+                        <div><dt>Unit</dt><dd th:text="${unit.name + ' (' + unit.code + ')'}">Unit</dd></div>
+                        <div><dt>Location</dt><dd th:text="${unit.location}">Location</dd></div>
+                        <div><dt>Posting</dt><dd th:text="${person.posting}">Posting</dd></div>
+                        <div><dt>Contact</dt><dd th:text="${person.contactDetails ?: 'Not recorded'}">Not recorded</dd></div>
+                    </dl>
+                </section>
+                <section class="card">
+                    <h3 class="card-title">Readiness</h3>
+                    <p class="profile-status" th:text="${person.availabilityStatus}">AVAILABLE</p>
+                    <p class="muted">Readiness reflects the current resource-service availability record.</p>
+                </section>
+            </div>
+
+            <section class="card">
+                <h3 class="card-title">Assigned equipment</h3>
+                <div class="table-scroll"><table class="table-dark">
+                    <thead><tr><th>Asset code</th><th>Name</th><th>Category</th><th>Location</th><th>Condition</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr th:each="asset : ${assignedAssets}">
+                            <td th:text="${asset.assetCode}"></td><td th:text="${asset.name}"></td><td th:text="${asset.category}"></td><td th:text="${asset.location}"></td><td th:text="${asset.condition}"></td><td th:text="${asset.operationalStatus}"></td>
+                        </tr>
+                        <tr th:if="${assignedAssets.isEmpty()}"><td colspan="6">No portable equipment is assigned to this person.</td></tr>
+                    </tbody>
+                </table></div>
+            </section>
+
+            <section class="card">
+                <h3 class="card-title">Assigned vehicles</h3>
+                <div class="table-scroll"><table class="table-dark">
+                    <thead><tr><th>Registration</th><th>Type</th><th>Location</th><th>Condition</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr th:each="vehicle : ${assignedVehicles}">
+                            <td th:text="${vehicle.registrationNumber}"></td><td th:text="${vehicle.vehicleType}"></td><td th:text="${vehicle.location}"></td><td th:text="${vehicle.condition}"></td><td th:text="${vehicle.operationalStatus}"></td>
+                        </tr>
+                        <tr th:if="${assignedVehicles.isEmpty()}"><td colspan="5">No vehicle is assigned to this person.</td></tr>
+                    </tbody>
+                </table></div>
+            </section>
+        </div>
+    </div>
+</body>
+</html>

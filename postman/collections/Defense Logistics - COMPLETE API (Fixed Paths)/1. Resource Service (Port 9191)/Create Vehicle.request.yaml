@@ -1,0 +1,19 @@
+$kind: http-request
+url: http://localhost:9191/api/v1/vehicles
+method: POST
+headers:
+  Authorization: Bearer admin
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "registrationNumber": "TRK-999",
+      "vehicleType": "TRUCK",
+      "unitId": 1,
+      "location": "Camp Alpha",
+      "operationalStatus": "AVAILABLE",
+      "condition": "GOOD",
+      "driverPersonnelId": 1
+    }
+order: 6000

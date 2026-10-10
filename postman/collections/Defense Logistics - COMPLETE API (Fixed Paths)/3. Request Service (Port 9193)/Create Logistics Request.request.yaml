@@ -1,0 +1,26 @@
+$kind: http-request
+url: http://localhost:9193/api/v1/requests
+method: POST
+headers:
+  Authorization: Bearer admin
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "requestNumber": "REQ-2026-001",
+      "requestingUnitId": 1,
+      "requestedBy": "Lt. Commander Smith",
+      "purpose": "Field Training Exercise",
+      "priority": "HIGH",
+      "deliveryLocation": "Base Camp Alpha",
+      "items": [
+        {
+          "resourceType": "SUPPLY",
+          "description": "Field Rations",
+          "quantityRequested": 200,
+          "unitOfMeasure": "BOX"
+        }
+      ]
+    }
+order: 1000

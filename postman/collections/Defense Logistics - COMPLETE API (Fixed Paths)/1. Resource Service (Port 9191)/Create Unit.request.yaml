@@ -1,0 +1,16 @@
+$kind: http-request
+url: http://localhost:9191/api/v1/units
+method: POST
+headers:
+  Authorization: Bearer admin
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "name": "Alpha Squadron",
+      "code": "UNIT-001",
+      "location": "Base Camp Alpha",
+      "status": "ACTIVE"
+    }
+order: 1000

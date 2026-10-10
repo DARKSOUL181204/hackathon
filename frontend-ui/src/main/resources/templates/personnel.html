@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Personnel | DEF-LOGIX')}"></head>
+<body>
+    <div th:replace="~{fragments/layout :: page(~{::content}, 'personnel')}">
+        <div th:fragment="content">
+            
+            <div class="card" th:if="${session.role == 'ADMIN'}">
+                <div class="flex-header">
+                    <h3 class="card-title" style="margin:0;">ONBOARD NEW PERSONNEL</h3>
+                </div>
+                <form action="/personnel/create" method="post" class="form-grid">
+                    <div class="form-group">
+                        <label>Service #</label>
+                        <input type="text" name="serviceNumber" class="form-control" required placeholder="SN-888">
+                    </div>
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" name="fullName" class="form-control" required placeholder="Jane Doe">
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <input type="text" name="role" class="form-control" required placeholder="ENGINEER">
+                    </div>
+                    <div class="form-group">
+                        <label>Unit ID</label>
+                        <input type="number" name="unitId" class="form-control" required placeholder="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="availabilityStatus" class="form-control">
+                            <option value="AVAILABLE">AVAILABLE</option>
+                            <option value="ALLOCATED">ALLOCATED</option>
+                            <option value="ON_LEAVE">ON LEAVE</option>
+                        </select>
+                    </div>
+                    <input type="hidden" name="posting" value="Assigned HQ">
+                    <button type="submit" class="btn btn-primary">Add personnel</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <div class="table-toolbar"><h3 class="card-title">Directory</h3><div class="table-search"><input class="form-control" type="search" placeholder="Filter personnel" aria-label="Filter personnel" data-table-filter="#personnel-table" data-result-count="#personnel-filter-count"></div><span id="personnel-filter-count" class="filter-count"></span></div>
+                <div class="table-scroll"><table id="personnel-table" class="table-dark">
+                    <thead>
+                        <tr>
+                            <th>Service #</th>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Posting</th>
+                            <th>Availability</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${personnelList}" data-filter-row>
+                            <td th:text="${p.serviceNumber}"></td>
+                            <td>
+                                <a th:if="${session.role == 'ADMIN'}" class="person-link" th:href="@{/personnel/{id}(id=${p.id})}" th:text="${p.fullName}"></a>
+                                <span th:unless="${session.role == 'ADMIN'}" th:text="${p.fullName}"></span>
+                            </td>
+                            <td th:text="${p.role}"></td>
+                            <td th:text="${p.posting}"></td>
+                            <td>
+                                <form th:if="${session.role == 'ADMIN'}" th:action="@{/personnel/{id}/availability(id=${p.id})}" method="post" class="form-actions">
+                                    <select name="status" class="form-control" style="min-height:32px; width:130px;"><option value="AVAILABLE" th:selected="${p.availabilityStatus == 'AVAILABLE'}">Available</option><option value="ALLOCATED" th:selected="${p.availabilityStatus == 'ALLOCATED'}">Allocated</option><option value="ON_LEAVE" th:selected="${p.availabilityStatus == 'ON_LEAVE'}">On leave</option></select>
+                                    <button class="btn btn-secondary btn-compact" type="submit">Update</button>
+                                </form>
+                                <span th:unless="${session.role == 'ADMIN'}" th:class="${p.availabilityStatus == 'AVAILABLE' ? 'badge badge-green' : 'badge badge-yellow'}" th:text="${p.availabilityStatus}"></span>
+                            </td>
+                        </tr>
+                        <tr class="empty-state" th:if="${personnelList == null or personnelList.isEmpty()}"><td colspan="5">No personnel have been registered yet.</td></tr>
+                    </tbody>
+                </table></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

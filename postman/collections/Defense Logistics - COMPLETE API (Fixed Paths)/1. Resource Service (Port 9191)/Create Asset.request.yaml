@@ -1,0 +1,19 @@
+$kind: http-request
+url: http://localhost:9191/api/v1/assets
+method: POST
+headers:
+  Authorization: Bearer admin
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "assetCode": "RAD-101",
+      "name": "Field Radio Mk2",
+      "category": "COMM",
+      "unitId": 1,
+      "location": "Camp Alpha",
+      "operationalStatus": "AVAILABLE",
+      "condition": "NEW"
+    }
+order: 5000

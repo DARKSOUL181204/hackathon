@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My Status | DEF-LOGIX')}"></head>
+<body>
+    <div th:replace="~{fragments/layout :: page(~{::content}, 'my-status')}">
+        <div th:fragment="content">
+            <div class="section-heading"><div><p class="eyebrow">Personal readiness</p><h2>My service status</h2></div><span class="badge badge-green" th:text="${profile.accountStatus ?: 'ACTIVE'}"></span></div>
+            <div class="profile-grid">
+                <section class="card"><h3 class="card-title">Account access</h3><dl class="intel-list"><div><dt>Name</dt><dd th:text="${profile.fullName}"></dd></div><div><dt>Service ID</dt><dd th:text="${profile.username}"></dd></div><div><dt>Access level</dt><dd th:text="${profile.role}"></dd></div></dl></section>
+                <section class="card"><h3 class="card-title">Availability</h3><p class="profile-status" th:if="${profile.personnelLinked}" th:text="${profile.availabilityStatus}"></p><p class="muted" th:unless="${profile.personnelLinked}">Your account is active. Ask an administrator to link your personnel record using the same service ID to see unit readiness details.</p></section>
+            </div>
+            <section class="card" th:if="${profile.personnelLinked}"><h3 class="card-title">Current assignment</h3><dl class="intel-list"><div><dt>Unit</dt><dd th:text="${profile.unitName + ' (' + profile.unitCode + ')'}"></dd></div><div><dt>Location</dt><dd th:text="${profile.unitLocation}"></dd></div><div><dt>Posting</dt><dd th:text="${profile.posting}"></dd></div><div><dt>Personnel role</dt><dd th:text="${profile.personnelRole}"></dd></div></dl></section>
+        </div>
+    </div>
+</body>
+</html>

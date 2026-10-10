@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Dashboard | DEF-LOGIX')}"></head>
+<body>
+    <div th:replace="~{fragments/layout :: page(~{::content}, 'dashboard')}">
+        <div th:fragment="content">
+            <div class="grid-3">
+                <div class="card stat-card">
+                    <h3 class="card-title">Active units</h3>
+                    <div class="stat-value" th:text="${summary.totalUnits}">0</div>
+                    <p class="stat-subtitle">Commands reporting into the network</p>
+                </div>
+                <div class="card stat-card" style="--metric-accent: var(--accent-blue);">
+                    <h3 class="card-title">Deployed Personnel</h3>
+                    <div class="stat-value" th:text="${summary.totalPersonnel}">0</div>
+                    <p class="stat-subtitle">Personnel available for planning</p>
+                </div>
+                <div class="card stat-card" style="--metric-accent: var(--accent-yellow);">
+                    <h3 class="card-title">Pending Logistics Requests</h3>
+                    <div class="stat-value" th:text="${summary.pendingRequests}">0</div>
+                    <p class="stat-subtitle">Requirements awaiting command action</p>
+                </div>
+            </div>
+            
+            
+            <div class="card" th:if="${session.role == 'ADMIN'}">
+                <div class="flex-header">
+                    <h3 class="card-title" style="margin:0;">REGISTER NEW UNIT</h3>
+                </div>
+                <form action="/units/create" method="post" class="form-grid">
+                    <div class="form-group">
+                        <label>Unit Code</label>
+                        <input type="text" name="code" class="form-control" required placeholder="e.g. OMEGA-99">
+                    </div>
+                    <div class="form-group">
+                        <label>Unit Name</label>
+                        <input type="text" name="name" class="form-control" required placeholder="Omega Squadron">
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" name="location" class="form-control" required placeholder="Sector 7">
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status" class="form-control">
+                            <option value="ACTIVE">ACTIVE</option>
+                            <option value="INACTIVE">INACTIVE</option>
+                            <option value="DEPLOYED">DEPLOYED</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Deploy unit</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <div class="table-toolbar"><h3 class="card-title">Active bases / units</h3><div class="table-search"><input class="form-control" type="search" placeholder="Filter units" aria-label="Filter units" data-table-filter="#unit-table" data-result-count="#unit-filter-count"></div><span id="unit-filter-count" class="filter-count"></span></div>
+                <div class="table-scroll"><table id="unit-table" class="table-dark">
+                    <thead>
+                        <tr>
+                            <th>Unit Code</th>
+                            <th>Name</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="unit : ${units}" data-filter-row>
+                            <td th:text="${unit.code}"></td>
+                            <td th:text="${unit.name}"></td>
+                            <td th:text="${unit.location}"></td>
+                            <td><span class="badge badge-green" th:text="${unit.status}"></span></td>
+                        </tr>
+                        <tr class="empty-state" th:if="${units == null or units.isEmpty()}"><td colspan="4">No units have been registered yet.</td></tr>
+                    </tbody>
+                </table></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,15 @@
+$kind: http-request
+url: http://localhost:9193/api/v1/requests/1/approve
+method: POST
+headers:
+  Authorization: Bearer admin
+  Content-Type: application/json
+body:
+  type: json
+  content: |-
+    {
+      "approverId": "General Davis",
+      "decision": "APPROVED",
+      "comments": "Approved for training"
+    }
+order: 2000
