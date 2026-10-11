@@ -51,13 +51,7 @@ cd request-service
 mvn spring-boot:run
 ```
 
-## API Documentation (Swagger)
 
-Each service has its own Swagger UI page for easy endpoint testing.
-
-- Resource Service APIs: [http://localhost:9191/swagger-ui.html](http://localhost:9191/swagger-ui.html)
-- Inventory Service APIs: [http://localhost:9192/swagger-ui.html](http://localhost:9192/swagger-ui.html)
-- Request Service APIs: [http://localhost:9193/swagger-ui.html](http://localhost:9193/swagger-ui.html)
 
 ## Security & Authentication
 
